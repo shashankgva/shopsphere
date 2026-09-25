@@ -5,7 +5,6 @@ import type {
   ProductCategory,
   ProductsResponse,
 } from '../types/product';
-import { build } from 'vite';
 import type { SaveCartRequest, ServerCart } from '../types/serverCart';
 
 export type SortOrder = 'asc' | 'desc';

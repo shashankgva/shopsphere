@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom';
 import { clearCart } from '../features/cart/cartSlice';
 import CartItem from '../components/cart/CartItem';
 import OrderSummary from '../components/cart/OrderSummary';
-import { syncCart } from '../features/cart/cartThunk';
+// import { syncCart } from '../features/cart/cartThunk';
+import { useSaveCartMutation } from '../services/productsApi';
 
 function CartPage() {
   const dispatch = useAppDispatch();
@@ -14,14 +15,23 @@ function CartPage() {
   const syncStatus = useAppSelector((state) => state.cart.syncStatus);
   const syncError = useAppSelector((state) => state.cart.syncError);
 
+  const [saveCart, { isLoading: isSaving, isSuccess, isError }] =
+    useSaveCartMutation();
+
   if (items.length === 0) {
     return <EmptyCart />;
   }
 
   async function handleSyncCart() {
     try {
-      const serverCart = await dispatch(syncCart()).unwrap();
-      console.log(`Server Cart:`, serverCart);
+      const result = await saveCart({
+        userId: 1,
+        products: items.map((item) => ({
+          id: item.product.id,
+          quantity: item.quantity,
+        })),
+      }).unwrap();
+      console.log(`Server Cart:`, result);
     } catch (error) {
       console.error('Sync failed', error);
     }
