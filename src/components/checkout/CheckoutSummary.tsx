@@ -1,4 +1,3 @@
-import type strict from 'assert/strict';
 import { useAppSelector } from '../../app/hooks';
 import {
   selectCartItems,
@@ -7,13 +6,18 @@ import {
   selectShipping,
   selectTax,
 } from '../../features/cart/cartSelectors';
+import {
+  selectCheckoutTotal,
+  selectDiscount,
+} from '../../features/checkout/checkoutSelectors';
 
 function CheckoutSummary() {
   const items = useAppSelector(selectCartItems);
   const subtotal = useAppSelector(selectCartSubtotal);
   const shipping = useAppSelector(selectShipping);
   const tax = useAppSelector(selectTax);
-  const total = useAppSelector(selectCartTotal);
+  const total = useAppSelector(selectCheckoutTotal);
+  const discount = useAppSelector(selectDiscount);
 
   return (
     <aside className="rounded-2xl border border-slate-200 bg-white p-6">
@@ -49,6 +53,16 @@ function CheckoutSummary() {
         <div className="border-t border-slate-200 pt-3">
           <Row label="Total" value={total} strong />
         </div>
+        {discount > 0 && (
+          <div className="flex justify-between text-green-600">
+            <span>Discount</span>
+
+            <span>
+              -$
+              {discount.toFixed(2)}
+            </span>
+          </div>
+        )}
       </div>
     </aside>
   );

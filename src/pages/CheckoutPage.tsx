@@ -1,16 +1,15 @@
-import { Navigate } from 'react-router-dom';
 import { useAppSelector } from '../app/hooks';
-import OptimisticQuantity from '../components/cart/OptimisticQuantity';
 import { selectCartItems } from '../features/cart/cartSelectors';
 import CheckoutForm from '../components/checkout/CheckoutForm';
 import CheckoutSummary from '../components/checkout/CheckoutSummary';
+import CouponForm from '../components/checkout/CouponForm';
 
 function CheckoutPage() {
   const items = useAppSelector(selectCartItems);
 
-  if (!items.length) {
-    return <Navigate to="/cart" replace />;
-  }
+  // if (!items.length) {
+  //   return <Navigate to="/cart" replace />;
+  // }
 
   return (
     <section>
@@ -23,7 +22,8 @@ function CheckoutPage() {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
         <CheckoutForm />
         <div>
-          <div className="sticky top-24">
+          <div className="sticky top-24 space-y-4">
+            <CouponForm />
             <CheckoutSummary />
           </div>
         </div>

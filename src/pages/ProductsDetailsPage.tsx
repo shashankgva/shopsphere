@@ -2,7 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import {
   useGetProductByIdQuery,
   useGetProductsByCategoryQuery,
-} from '../services/productsApi';
+} from '../services/shopApi';
 import ProductDetailsSkeleton from '../components/product/ProductDetailSkeleton';
 import ProductGallery from '../components/product/ProductGallery';
 import ProductInfo from '../components/product/ProductInfo';

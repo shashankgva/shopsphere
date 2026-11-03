@@ -6,6 +6,8 @@ import type {
   ProductsResponse,
 } from '../types/product';
 import type { SaveCartRequest, ServerCart } from '../types/serverCart';
+import type { CreateOrderRequest, Order } from '../types/order';
+import { createFakeOrder } from './fakeOrderApi';
 
 export type SortOrder = 'asc' | 'desc';
 
@@ -18,11 +20,12 @@ export interface GetProductsParams {
   category?: string;
 }
 
-export const productsApi = createApi({
-  reducerPath: 'productsApi',
+export const shopApi = createApi({
+  reducerPath: 'shopApi',
   baseQuery: fetchBaseQuery({
     baseUrl: 'https://dummyjson.com',
   }),
+  tagTypes: ['Product', 'Order'],
   endpoints: (builder) => ({
     getProducts: builder.query<ProductsResponse, GetProductsParams | void>({
       query: (params) => ({
@@ -75,6 +78,22 @@ export const productsApi = createApi({
     saveCart: builder.mutation<ServerCart, SaveCartRequest>({
       query: (cart) => ({ url: '/carts/add', method: 'POST', body: cart }),
     }),
+    createOrder: builder.mutation<Order, CreateOrderRequest>({
+      async queryFn(request) {
+        try {
+          const order = await createFakeOrder(request);
+          return { data: order };
+        } catch (error) {
+          return {
+            error: {
+              status: 'CUSTOM_ERROR',
+              error: 'Unable to create order.',
+            },
+          };
+        }
+      },
+      invalidatesTags: ['Order'],
+    }),
   }),
 });
 
@@ -85,4 +104,5 @@ export const {
   useSearchProductsQuery,
   useGetProductsByCategoryQuery,
   useSaveCartMutation,
-} = productsApi;
+  useCreateOrderMutation,
+} = shopApi;

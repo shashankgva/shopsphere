@@ -5,7 +5,7 @@ import ProductToolbar, {
   type SortOption,
 } from '../components/product/ProductToolbar';
 
-import { useGetProductsQuery } from '../services/productsApi';
+import { useGetProductsQuery } from '../services/shopApi';
 import { useDeferredValue, useMemo, useState, useTransition } from 'react';
 import useDebounce from '../hooks/useDebounce';
 import Pagination from '../components/product/Pagination';

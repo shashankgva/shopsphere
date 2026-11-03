@@ -1,4 +1,5 @@
-import type { CheckoutState } from '../../types/checkout';
+import type { ZodError } from 'zod';
+import type { CheckoutErrors, CheckoutState } from '../../types/checkout';
 import { checkoutSchema } from './checkoutSchema';
 
 export const initialCheckoutState: CheckoutState = {
@@ -11,8 +12,12 @@ export async function checkoutAction(
   previousState: CheckoutState,
   formData: FormData,
 ): Promise<CheckoutState> {
-  console.log('Previous state>>>', previousState);
+  return validateCheckout(formData);
+}
 
+export async function validateCheckout(
+  formData: FormData,
+): Promise<CheckoutState> {
   const billingSameAsShipping = formData.get('billingSameAsShipping') === 'on';
 
   const rawData = {
@@ -48,12 +53,10 @@ export async function checkoutAction(
   const result = checkoutSchema.safeParse(rawData);
 
   if (!result.success) {
-    const flattened = result.error.flatten();
-
     return {
       success: false,
       message: 'Please correct the highlighted fields.',
-      errors: flattened.fieldErrors,
+      errors: flattenErrors(result.error),
     };
   }
 
@@ -68,14 +71,34 @@ export async function checkoutAction(
 
   */
 
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-
-  const orderId = `ORD-${Date.now()}`;
+  const values = result.data;
 
   return {
     success: true,
-    message: 'Your order has been placed successfully.',
+    message: 'Checkout information is valid.',
     errors: {},
-    orderId,
+    data: {
+      email: values.email,
+      shippingAddress: values.shippingAddress,
+      billingAddress: values.billingSameAsShipping
+        ? values.shippingAddress
+        : values.billingAddress,
+      deliveryMethod: values.deliveryMethod,
+      paymentMethod: values.paymentMethod,
+    },
   };
+}
+
+function flattenErrors(error: ZodError) {
+  const errors: CheckoutErrors = {};
+
+  for (const issue of error.issues) {
+    const path = issue.path.join('.');
+
+    if (path && !errors[path]) {
+      errors[path] = issue.message;
+    }
+  }
+
+  return errors;
 }

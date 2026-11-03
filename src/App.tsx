@@ -7,6 +7,7 @@ import ProductsDetailsPage from './pages/ProductsDetailsPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import WishlistPage from './pages/WishlistPage';
+import OrderDetailsPage from './pages/OrderDetailsPage';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/wishlist" element={<WishlistPage />} />
+        <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

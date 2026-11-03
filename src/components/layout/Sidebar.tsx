@@ -1,5 +1,5 @@
 import { Link, NavLink, useSearchParams } from 'react-router-dom';
-import { useGetCategoriesQuery } from '../../services/productsApi';
+import { useGetCategoriesQuery } from '../../services/shopApi';
 
 const categories = [
   'Beauty',

@@ -2,7 +2,7 @@ export interface Address {
   firstName: string;
   lastName: string;
   addressLine1: string;
-  addressLine2: string;
+  addressLine2?: string;
   city: string;
   state: string;
   postalCode: string;
@@ -22,13 +22,18 @@ export interface CheckoutFormValues {
   paymentMethod: PaymentMethod;
 }
 
-export interface CheckoutErrors {
-  [field: string]: string[] | undefined;
-}
+export type CheckoutErrors = Record<string, string>;
 
+export interface ValidCheckoutData {
+  email: string;
+  shippingAddress: Address;
+  billingAddress: Address;
+  deliveryMethod: DeliveryMethod;
+  paymentMethod: PaymentMethod;
+}
 export interface CheckoutState {
   success: boolean;
   message: string;
   errors: CheckoutErrors;
-  orderId?: string;
+  data?: ValidCheckoutData;
 }

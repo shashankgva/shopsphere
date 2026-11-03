@@ -6,7 +6,7 @@ import { clearCart } from '../features/cart/cartSlice';
 import CartItem from '../components/cart/CartItem';
 import OrderSummary from '../components/cart/OrderSummary';
 // import { syncCart } from '../features/cart/cartThunk';
-import { useSaveCartMutation } from '../services/productsApi';
+import { useSaveCartMutation } from '../services/shopApi';
 
 function CartPage() {
   const dispatch = useAppDispatch();
