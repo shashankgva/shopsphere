@@ -3,22 +3,31 @@ import { CheckCircle2, Package } from 'lucide-react';
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 
 import type { Order } from '../types/order';
+import { useGetOrderByIdQuery } from '../services/ordersApi';
 
 function OrderDetailsPage() {
   const { orderId } = useParams<{
     orderId: string;
   }>();
 
-  const location = useLocation();
+  const {
+    data: order,
+    isLoading,
+    isError,
+  } = useGetOrderByIdQuery(orderId ?? '', {
+    skip: !orderId,
+  });
 
-  const order = (
-    location.state as {
-      order?: Order;
-    } | null
-  )?.order;
+  if (!orderId) {
+    return <p>Missing order ID.</p>;
+  }
 
-  if (!order) {
-    return <Navigate to="/products" replace />;
+  if (isLoading) {
+    return <p>Loading order...</p>;
+  }
+
+  if (isError || !order) {
+    return <p>Could not load this order.</p>;
   }
 
   return (
@@ -65,7 +74,7 @@ function OrderDetailsPage() {
           <dl className="mt-5 space-y-4">
             <MoneyRow label="Subtotal" value={order.subtotal} />
 
-            <MoneyRow label="Shipping" value={order.shipping} />
+            <MoneyRow label="Shipping" value={order.shippingFee} />
 
             <MoneyRow label="Tax" value={order.tax} />
 

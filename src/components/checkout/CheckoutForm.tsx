@@ -12,15 +12,18 @@ import SubmitOrderButton from './SubmitOrderButton';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { useNavigate } from 'react-router-dom';
 import { selectCartItems } from '../../features/cart/cartSelectors';
-import { useCreateOrderMutation } from '../../services/shopApi';
+import { useCreateOrderMutation } from '../../services/ordersApi';
 import type { CheckoutState } from '../../types/checkout';
 import { clearCart } from '../../features/cart/cartSlice';
 import { resetCheckout } from '../../features/checkout/checkoutSlice';
+import { selectCoupon } from '../../features/checkout/checkoutSelectors';
+import type { CreateOrderRequest } from '../../types/orderApi';
 
 function CheckoutForm() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const cartItems = useAppSelector(selectCartItems);
+  const coupon = useAppSelector(selectCoupon);
 
   const [createOrder, { isLoading: isCreatingOrder }] =
     useCreateOrderMutation();
@@ -45,23 +48,26 @@ function CheckoutForm() {
       };
     }
 
-    try {
-      const order = await createOrder({
-        userId: 1,
+    const request = {
+      items: cartItems.map((item) => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+      })),
+      shippingAddress: {
+        ...validation.data.shippingAddress,
         email: validation.data.email,
-        shippingAddress: validation.data.shippingAddress,
-        billingAddress: validation.data.billingAddress,
-        deliveryMethod: validation.data.deliveryMethod,
-        paymentMethod: validation.data.paymentMethod,
-        products: cartItems.map((item) => ({
-          id: item.product.id,
-          quantity: item.quantity,
-        })),
-      }).unwrap();
+      },
+      deliveryMethod: validation.data.deliveryMethod,
+      paymentMethod: validation.data.paymentMethod,
+      couponCode: coupon ?? undefined,
+    } satisfies CreateOrderRequest;
+
+    try {
+      const order = await createOrder(request).unwrap();
 
       dispatch(clearCart());
       dispatch(resetCheckout());
-      navigate(`/orders/${order.id}`, { state: { order } });
+      navigate(`/orders/${order.id}`, { replace: true });
 
       return {
         success: true,
@@ -70,6 +76,7 @@ function CheckoutForm() {
         data: validation.data,
       };
     } catch (error) {
+      console.error('Order creation failed.', error);
       return {
         success: false,
         message: 'We couldnt place your order. Please try again.',

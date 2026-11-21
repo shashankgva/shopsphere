@@ -4,7 +4,7 @@ const AddressSchema = z.object({
   firstName: z.string().trim().min(1).max(80),
   lastName: z.string().trim().min(1).max(80),
   email: z.email(),
-  phone: z.string().trim().min(7).max(30),
+  phone: z.string().trim().min(7).max(30).optional(),
   addressLine1: z.string().trim().min(1).max(150),
   addressLine2: z.string().trim().max(150).optional(),
   city: z.string().trim().min(1).max(80),
@@ -18,7 +18,7 @@ const CartLineSchema = z.object({
   quantity: z.number().int().min(1).max(99),
 });
 
-const CreateOrderSchema = z.object({
+export const CreateOrderSchema = z.object({
   items: z
     .array(CartLineSchema)
     .min(1, 'Your Cart is empty')
@@ -29,6 +29,9 @@ const CreateOrderSchema = z.object({
       'Each product must appear only once.',
     ),
   shippingAddress: AddressSchema,
-  deliveryMethod: z.enum(['card', 'paypal', 'cash_on_delivery']),
+  deliveryMethod: z.enum(['standard', 'express']),
+  paymentMethod: z.enum(['card', 'paypal', 'cash_on_delivery']),
   couponCode: z.string().trim().toUpperCase().max(30).optional(),
 });
+
+export type CreateOrderInput = z.infer<typeof CreateOrderSchema>;

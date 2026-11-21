@@ -11,7 +11,7 @@ export interface Address {
 
 export type DeliveryMethod = 'standard' | 'express';
 
-export type PaymentMethod = 'card' | 'cod';
+export type PaymentMethod = 'card' | 'paypal' | 'cash_on_delivery';
 
 export interface CheckoutFormValues {
   email: string;

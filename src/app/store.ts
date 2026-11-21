@@ -5,6 +5,7 @@ import cartReducer from '../features/cart/cartSlice';
 import wishlistReducer from '../features/wishlist/wishlistSlice';
 import checkoutReducer from '../features/checkout/checkoutSlice';
 import { loadCart, saveCart } from '../utils/storage';
+import { ordersApi } from '../services/ordersApi';
 
 const persistedCart = loadCart();
 
@@ -14,12 +15,15 @@ export const store = configureStore({
     wishlist: wishlistReducer,
     checkout: checkoutReducer,
     [shopApi.reducerPath]: shopApi.reducer,
+    [ordersApi.reducerPath]: ordersApi.reducer,
   },
 
   preloadedState: persistedCart ? { cart: persistedCart } : undefined,
 
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(shopApi.middleware),
+    getDefaultMiddleware()
+      .concat(shopApi.middleware)
+      .concat(ordersApi.middleware),
 });
 
 store.subscribe(() => {

@@ -22,6 +22,7 @@ export async function validateCheckout(
 
   const rawData = {
     email: formData.get('email'),
+    phone: '9999999999',
     shippingAddress: {
       firstName: formData.get('shipping.firstName'),
       lastName: formData.get('shipping.lastName'),
